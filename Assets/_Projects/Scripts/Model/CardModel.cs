@@ -1,14 +1,58 @@
 public class CardModel
 {
-    private CardView _cardView = new CardView();
+    private CardView _cardView;
 
-    public int Value { get; set; }
-    public CardModel ParentCard { get; set; }
-    public CardModel ChildCard { get; set; }
+    private int _value;
+    private CardModel _parentCard;
+    private CardModel _childCard;
+    private bool _isOpen;
+    private bool _isBabkCard = false;
+
+    public int Value => _value;
+    public CardModel ParentCard => _parentCard;
+    public CardModel ChildCard => _childCard;
     public bool IsOpen => ChildCard == null;
+    public bool IsBankCard => _isBabkCard;
 
-    public void OnModelChainged()
+    public CardModel(CardView cardView)
     {
-        _cardView.Bind(this);
+        _cardView = cardView;
+    }
+
+    public void SetChild(CardModel child) => _childCard = child;
+    public void SetParent(CardModel parent) => _parentCard = parent;
+
+    public void SetValue(int value)
+    {
+        _value = value;
+
+        if(_childCard == null)
+        {
+            _cardView.RenderFaceCard(value);
+        }
+    }
+
+    public void SetAsBankCard()
+    {
+        _isBabkCard = true;
+    }
+
+    public void DestroyItself()
+    {
+        if(_parentCard != null)
+        {
+            _childCard = null;
+            
+            _cardView.RenderFaceCard(Value);
+        }
+    }
+
+    public void OpenParent()
+    {
+        if (_parentCard != null)
+        {
+            _parentCard._childCard = null;
+            _parentCard._cardView.RenderFaceCard(_parentCard.Value);
+        }
     }
 }

@@ -1,9 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ChainGenerator
 {
+    private const int bottomBorder = 2;
+    private const int topBorder = 7;
+
     public List<List<int>> GenerateChains(int cardCount)
     {
         var curantCardCount = cardCount;
@@ -12,13 +14,20 @@ public class ChainGenerator
 
         while (curantCardCount > 0)
         {
-            int chainLength = Random.Range(2, 7);
+            int chainLength = Random.Range(bottomBorder, topBorder);
 
             chainLength = curantCardCount < chainLength ? curantCardCount : chainLength;
 
-            chainsList.Add(GenerateChain(chainLength));
-
             curantCardCount -= chainLength;
+
+            //Чтобы избежать слишком коротких цепочек
+            if (curantCardCount < bottomBorder)
+            {
+                chainLength += curantCardCount;
+                curantCardCount = 0;
+            }
+
+            chainsList.Add(GenerateChain(chainLength));
         }
 
         return chainsList;
