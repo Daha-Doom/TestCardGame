@@ -44,6 +44,7 @@ public class LevelGenerator
         if (card.Value == 0)
         {
             card.SetValue(value);
+            Debug.Log(value + " в карте " + card.CardView.transform);
             return true;
         }
         else if (card.ParentCard != null)
@@ -62,20 +63,25 @@ public class LevelGenerator
         {
             var newCard = Object.Instantiate(cardPrefab, bankContainer);
 
-            newCard.transform.localPosition = new Vector3(0, i * 0.05f, 0);
+            newCard.transform.localPosition = new Vector3(0, i * 5f, 0);
 
-            newCard.GetComponent<SpriteRenderer>().sortingOrder = i;
+            newCard.GetComponent<CardView>().Order = i - 20;
             bankViews.Add(newCard);
         }
 
         var bankModels = new CardModel[bankViews.Count];
         GenerateTools.CreateCardChain(0, bankViews.ToArray(), null, bankModels);
 
+        foreach (var model in bankModels)
+        {
+            model.SetAsBankCard();
+        }
+
         for (int i = 0; i < bankModels.Length; i++)
         {
             bankModels[i].SetValue(bank[i]);
         }
 
-        allCards.Add(bankModels);
+        allCards.Insert(0, bankModels);
     }
 }

@@ -1,11 +1,14 @@
+using DG.Tweening;
+using UnityEngine;
+
 public class CardModel
 {
     private CardView _cardView;
+    public CardView CardView => _cardView;
 
     private int _value;
     private CardModel _parentCard;
     private CardModel _childCard;
-    private bool _isOpen;
     private bool _isBabkCard = false;
 
     public int Value => _value;
@@ -37,16 +40,6 @@ public class CardModel
         _isBabkCard = true;
     }
 
-    public void DestroyItself()
-    {
-        if(_parentCard != null)
-        {
-            _childCard = null;
-            
-            _cardView.RenderFaceCard(Value);
-        }
-    }
-
     public void OpenParent()
     {
         if (_parentCard != null)
@@ -54,5 +47,10 @@ public class CardModel
             _parentCard._childCard = null;
             _parentCard._cardView.RenderFaceCard(_parentCard.Value);
         }
+    }
+
+    public void Shake()
+    {
+        _cardView.transform.DOShakePosition(0.3f, 0.1f);
     }
 }

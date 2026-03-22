@@ -14,7 +14,7 @@ public class ParentChildCardSetter
         {
             var cardViews = bunch.GetComponentsInChildren<CardView>().ToList();
 
-            var cards = cardViews.OrderBy(view => view.GetComponent<SpriteRenderer>().sortingOrder)
+            var cards = cardViews.OrderBy(view => view.Order)
                                     .ToArray();
 
             var cardsOneBunch = new CardModel[cards.Length];

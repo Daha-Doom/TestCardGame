@@ -13,6 +13,6 @@ public class MainScript : MonoBehaviour
     {
         var mainController = new MainController();
 
-        mainController.StartGenerate(_cardCount, cardPrefab);
+        mainController.StartGame(_cardCount, cardPrefab);
     }
 }

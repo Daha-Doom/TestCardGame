@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ChainGenerator
 {
-    private const int bottomBorder = 2;
-    private const int topBorder = 7;
+    private const int bottomBorder = 1;
+    private const int topBorder = 6;
 
     public List<List<int>> GenerateChains(int cardCount)
     {
@@ -26,6 +26,9 @@ public class ChainGenerator
                 chainLength += curantCardCount;
                 curantCardCount = 0;
             }
+
+            //Добавляем карту, которую сможет забрать банк
+            chainLength++;
 
             chainsList.Add(GenerateChain(chainLength));
         }

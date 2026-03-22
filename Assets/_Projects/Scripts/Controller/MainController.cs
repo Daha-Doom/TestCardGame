@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class MainController : MonoBehaviour
+public class MainController
 {
     private ChainGenerator _chainGenerator;
     private LevelGenerator _levelGenerator;
     private ParentChildCardSetter _parentChildCardSetter;
+    private InteractCardHandler _interactCardHandler;
 
     public MainController()
     {
@@ -16,12 +15,9 @@ public class MainController : MonoBehaviour
         _parentChildCardSetter = new ParentChildCardSetter();
     }
 
-    public void StartGenerate(int cardCount, CardView cardPrefab)
+    public void StartGame(int cardCount, CardView cardPrefab)
     {
         var allCard = _parentChildCardSetter.SetParentChildCard();
-
-        foreach (var cards in allCard)
-            Debug.Log(string.Join(',', cards.ToList()));
 
         var chains = _chainGenerator.GenerateChains(cardCount);
 
@@ -29,5 +25,18 @@ public class MainController : MonoBehaviour
             Debug.Log(string.Join(',', chain));
 
         _levelGenerator.Generate(chains, allCard, cardCount, cardPrefab);
+
+        _interactCardHandler = new InteractCardHandler(allCard[0].FirstOrDefault(c => c.IsOpen));
+
+        for (int i = 0; i < allCard.Count; i++)
+            foreach(var cardModel in allCard[i])
+            {
+                CardModel modelRef = cardModel;
+
+                cardModel.CardView.OnClicked += async () =>
+                {
+                    await _interactCardHandler.InteractAsync(modelRef);
+                };
+            }
     }
 }
