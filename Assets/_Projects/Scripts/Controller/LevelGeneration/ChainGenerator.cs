@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ChainGenerator
 {
-    private const int bottomBorder = 10;
-    private const int topBorder = 20;
+    private const int bottomBorder = 1;
+    private const int topBorder = 6;
 
     public List<List<int>> GenerateChains(int cardCount)
     {
