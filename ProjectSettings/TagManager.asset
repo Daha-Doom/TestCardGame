@@ -7,6 +7,7 @@ TagManager:
   - Card
   - CardBunch
   - CardBank
+  - WinText
   layers:
   - Default
   - TransparentFX

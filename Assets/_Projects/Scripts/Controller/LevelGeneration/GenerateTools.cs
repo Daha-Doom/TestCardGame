@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class GenerateTools
@@ -8,7 +6,13 @@ public static class GenerateTools
     {
         if (index >= cardViews.Length) return null;
 
-        var currentModel = new CardModel(cardViews[index]);
+        //0 - крести
+        //1 - бубны
+        //2 - червы
+        //3 - пики
+        var mark = Random.Range(0, 4);
+
+        var currentModel = new CardModel(cardViews[index], mark);
 
         currentModel.SetParent(parentModel);
 

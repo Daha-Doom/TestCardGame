@@ -10,17 +10,6 @@ public class CardView : MonoBehaviour, IPointerClickHandler
     public List<Sprite> CardsImage;
     [SerializeField]
     public int Order;
-    [SerializeField]
-    public int Mark;
-
-    public void Awake()
-    {
-        //0 - крести
-        //1 - бубны
-        //2 - червы
-        //3 - пики
-        Mark = UnityEngine.Random.Range(0, 3);
-    }
 
     public event Action OnClicked;
 
@@ -30,9 +19,9 @@ public class CardView : MonoBehaviour, IPointerClickHandler
         OnClicked?.Invoke();
     }
 
-    public void RenderFaceCard(int value)
+    public void RenderFaceCard(int value, int mark)
     {
         var img = this.GetComponent<Image>();
-        img.sprite = CardsImage[value + (13 * Mark)];
+        img.sprite = CardsImage[value + (13 * mark)];
     }
 }

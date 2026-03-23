@@ -1,25 +1,28 @@
 using DG.Tweening;
-using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class CardModel
 {
     private CardView _cardView;
     public CardView CardView => _cardView;
 
+    private int _mark;
     private int _value;
     private CardModel _parentCard;
     private CardModel _childCard;
     private bool _isBabkCard = false;
 
+    public int Mark => _mark;
     public int Value => _value;
     public CardModel ParentCard => _parentCard;
     public CardModel ChildCard => _childCard;
     public bool IsOpen => ChildCard == null;
     public bool IsBankCard => _isBabkCard;
 
-    public CardModel(CardView cardView)
+    public CardModel(CardView cardView, int mark)
     {
         _cardView = cardView;
+        _mark = mark;
     }
 
     public void SetChild(CardModel child) => _childCard = child;
@@ -31,8 +34,15 @@ public class CardModel
 
         if(_childCard == null)
         {
-            _cardView.RenderFaceCard(value);
+            _cardView.RenderFaceCard(value, _mark);
         }
+    }
+
+    public void SetCard(int mark, int value)
+    {
+        _mark = mark;
+
+        SetValue(value);
     }
 
     public void SetAsBankCard()
@@ -45,7 +55,7 @@ public class CardModel
         if (_parentCard != null)
         {
             _parentCard._childCard = null;
-            _parentCard._cardView.RenderFaceCard(_parentCard.Value);
+            _parentCard._cardView.RenderFaceCard(_parentCard.Value, _parentCard._mark);
         }
     }
 

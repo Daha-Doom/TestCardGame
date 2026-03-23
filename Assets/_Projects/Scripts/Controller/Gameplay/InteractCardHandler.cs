@@ -1,30 +1,42 @@
 using DG.Tweening;
 using System;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InteractCardHandler
 {
+    private int _cardOnField;
+    private bool _isBusy;
+
+    private WinAction _winAction;
+
     private CardModel _topBankCard;
     public void SetBankCard(CardModel bankCard) => _topBankCard = bankCard;
 
-    public InteractCardHandler(CardModel bankCard)
+    public InteractCardHandler(CardModel bankCard, int cardOnField)
     {
+        _cardOnField = cardOnField;
         _topBankCard = bankCard;
+        _winAction = new WinAction();
     }
 
     public async Task InteractAsync(CardModel clickedCard)
     {
+        if (_isBusy) return;
+
+        _isBusy = true;
+
         if (clickedCard.IsBankCard)
         {
-            InteractBankCard();
+            await InteractBankCardAsync();
         }
         else
         {
             await InteractBaseCardAsync(clickedCard);
         }
+
+        _isBusy = false;
     }
 
     public async Task InteractBaseCardAsync(CardModel clickedCard)
@@ -38,6 +50,8 @@ public class InteractCardHandler
         if (IsMoveValid(clickedCard.Value, _topBankCard.Value))
         {
             await ExecuteMoveAsync(clickedCard);
+
+            CheckWinCondition();
         }
         else
         {
@@ -45,13 +59,25 @@ public class InteractCardHandler
         }
     }
 
-    public void InteractBankCard()
+    public async Task InteractBankCardAsync()
     {
         if (_topBankCard.ParentCard != null)
         {
+            _topBankCard.OpenParent();
+
+            var view = _topBankCard.CardView;
+
+            var sequence = DOTween.Sequence();
+
+            sequence.Join(view.transform.DOMoveX(view.transform.position.x + 500f, 0.5f).SetEase(Ease.InBack));
+            sequence.Join(view.transform.DORotate(new Vector3(0, 0, 45f), 0.5f));
+            sequence.Join(view.GetComponent<Image>().DOFade(0, 0.5f));
+
+            await sequence.AsyncWaitForCompletion();
+
             var nextCard = _topBankCard.ParentCard;
 
-            GoNext(_topBankCard);
+            UnityEngine.Object.Destroy(view.gameObject);
 
             _topBankCard = nextCard;
         }
@@ -69,31 +95,15 @@ public class InteractCardHandler
 
     private async Task ExecuteMoveAsync(CardModel card)
     {
+        _cardOnField--;
+
         card.CardView.GetComponent<Image>().raycastTarget = false;
 
         await card.CardView.transform.DOMove(_topBankCard.CardView.transform.position, 0.4f)
-        .AsyncWaitForCompletion();
+                                        .AsyncWaitForCompletion();
 
-        //card.CardView.transform.DOMove(_topBankCard.CardView.transform.position, 0.4f)
-        //                        .OnComplete(async () =>
-        //                        {
-        //                            _topBankCard.CardView.Mark = card.CardView.Mark;
-        //                            _topBankCard.SetValue(card.Value);
-        //                            GoNext(card);
-        //                            await Task.Delay(1000);
-        //                            CheckWinCondition();
-        //                        });
+        _topBankCard.SetCard(card.Mark, card.Value);
 
-        _topBankCard.CardView.Mark = card.CardView.Mark;
-        _topBankCard.SetValue(card.Value);
-
-        GoNext(card);
-
-        CheckWinCondition();
-    }
-
-    private void GoNext(CardModel card)
-    {
         card.OpenParent();
         UnityEngine.Object.Destroy(card.CardView.gameObject);
     }
@@ -105,31 +115,9 @@ public class InteractCardHandler
 
     private void CheckWinCondition()
     {
-        var bunches = GameObject.FindGameObjectsWithTag("CardBunch");
-
-        foreach (var bunch in bunches)
+        if (_cardOnField == 0)
         {
-            Debug.Log("Кучка имеет " + bunch.transform.childCount + " детей");
-            if (bunch.transform.childCount > 1)
-            {
-                return;
-            }
+            _winAction.ShowWinText();
         }
-        OnWin();
-    }
-
-    private void OnWin()
-    {
-        Debug.Log("Победа! Поле очищено.");
-
-        var winText = GameObject.FindGameObjectWithTag("WinText").GetComponent<TextMeshProUGUI>();
-
-        winText.text = "YOU WIN!";
-
-        winText.transform.localScale = Vector3.zero;
-
-        winText.transform.DOScale(1.2f, 0.7f).SetEase(Ease.OutBack).OnComplete(() => {
-            winText.transform.DOShakeRotation(2f, 5f, 1, 90, false).SetLoops(-1);
-        });
     }
 }

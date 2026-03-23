@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainController
 {
@@ -26,7 +27,7 @@ public class MainController
 
         _levelGenerator.Generate(chains, allCard, cardCount, cardPrefab);
 
-        _interactCardHandler = new InteractCardHandler(allCard[0].FirstOrDefault(c => c.IsOpen));
+        _interactCardHandler = new InteractCardHandler(allCard[0].FirstOrDefault(c => c.IsOpen), cardCount);
 
         for (int i = 0; i < allCard.Count; i++)
             foreach(var cardModel in allCard[i])
@@ -38,5 +39,21 @@ public class MainController
                     await _interactCardHandler.InteractAsync(modelRef);
                 };
             }
+    }
+
+    public void AllButtonListener(ClickableView restartBtn, ClickableView exitBtn)
+    {
+        restartBtn.OnClicked += () =>
+        {
+            string currentSceneName = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene(currentSceneName);
+        };
+
+        exitBtn.OnClicked += () =>
+        {
+            Debug.Log("Выход из игры...");
+            Application.Quit();
+            UnityEditor.EditorApplication.isPlaying = false;
+        };
     }
 }
