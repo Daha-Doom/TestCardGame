@@ -53,7 +53,6 @@ public class MainController
         {
             Debug.Log("Выход из игры...");
             Application.Quit();
-            UnityEditor.EditorApplication.isPlaying = false;
         };
     }
 }
