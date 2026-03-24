@@ -44,7 +44,6 @@ public class LevelGenerator
         if (card.Value == 0)
         {
             card.SetValue(value);
-            Debug.Log(value + " в карте " + card.CardView.transform);
             return true;
         }
         else if (card.ParentCard != null)
